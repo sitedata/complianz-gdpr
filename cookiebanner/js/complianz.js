@@ -201,7 +201,7 @@ window.cmplz_highest_accepted_category = function() {
 function cmplz_set_category_as_body_class() {
 	let classList = document.body.className.split(/\s+/);
 	for (let i = 0; i < classList.length; i++) {
-		if ( classList[i].indexOf('cmplz-') !== -1 && classList[i] !== 'cmplz-document' ) {
+		if ( classList[i].indexOf('cmplz-') !== -1 ) {
 			document.body.classList.remove( classList[i] );
 		}
 	}
@@ -847,13 +847,15 @@ window.show_cookie_banner = function () {
 		}
 	}
 	document.getElementsByTagName("head")[0].appendChild(link);
+
 	if ( !disableCookiebanner ) {
-		cmplz_banner.querySelectorAll('.cmplz-links a:not(.cmplz-external), .cmplz-buttons a:not(.cmplz-external)').forEach(obj => {
+		document.querySelectorAll('.cmplz-links a:not(.cmplz-external), .cmplz-buttons a:not(.cmplz-external)', cmplz_banner ).forEach(obj => {
 			let docElement = obj;
 			docElement.classList.add('cmplz-hidden');
 			for (let pageType in pageLinks) {
 				if ( docElement.classList.contains(pageType) ){
-					docElement.setAttribute('href', pageLinks[pageType]['url']+docElement.getAttribute('data-relative_url') );
+					let curHref = docElement.getAttribute('href');
+					docElement.setAttribute('href', curHref.replace('{url}',pageLinks[pageType]['url'] ));
 					if ( docElement.innerText === '{title}') {
 						docElement.innerText = pageLinks[pageType]['title'];
 					}
@@ -1099,6 +1101,8 @@ function cmplz_get_all_service_consents(){
 	}
 	return consented_services;
 }
+
+
 /**
  * Get cookie path
  * @returns {*}

@@ -25,13 +25,12 @@ if ( ! class_exists( "cmplz_admin" ) ) {
 
 			//multisite
 			add_filter( "network_admin_plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
-
 			add_action( 'admin_init', array( $this, 'process_reset_action' ), 10, 1 );
-			add_action('cmplz_fieldvalue', array($this, 'filter_cookie_domain'), 10, 2);
+			add_action( 'cmplz_fieldvalue', array($this, 'filter_cookie_domain'), 10, 2);
 			add_action( 'wp_ajax_cmplz_dismiss_warning', array( $this, 'dismiss_warning' ) );
 			add_action( 'wp_ajax_cmplz_load_warnings', array( $this, 'ajax_load_warnings' ) );
 			add_action( 'wp_ajax_cmplz_load_gridblock', array( $this, 'ajax_load_gridblock' ) );
-
+			add_filter( 'cmplz_warning_types', array( $this, 'filter_enable_dismissable_warnings' ) );
 		}
 
 		static function this() {
@@ -387,6 +386,7 @@ if ( ! class_exists( "cmplz_admin" ) ) {
 					'success_conditions' => array(),
 					'relation' => 'OR',
 					'status' => 'open',
+					'dismissible' => true,
 					'include_in_progress' => false,
 				);
 
@@ -507,6 +507,24 @@ if ( ! class_exists( "cmplz_admin" ) ) {
 
 			return $warnings;
 		}
+
+		/**
+		 * Enable dismissable warnings for current free users
+		 * @param $warnings
+		 * @return array
+		 * @filter cmplz_warning_types
+		 */
+		function filter_enable_dismissable_warnings($warnings){
+			if (get_option('complianz_enable_dismissible_premium_warnings') && ! defined( 'cmplz_premium' ) ){
+				$warnings['advertising-enabled']['dismissible'] = true;
+				$warnings['sync-privacy-statement']['dismissible'] = true;
+				$warnings['ecommerce-legal']['dismissible'] = true;
+				$warnings['configure-tag-manager']['dismissible'] = true;
+				$warnings['targeting-multiple-regions']['dismissible'] = true;
+			}
+			return $warnings;
+		}
+
 
 
 		/**
@@ -794,7 +812,7 @@ if ( ! class_exists( "cmplz_admin" ) ) {
 		public function get_help_tip( $str ) {
 			?>
 			<span class="cmplz-tooltip-right tooltip-right"
-			      data-cmplz-tooltip="<?php echo esc_attr($str) ?>">
+			      data-cmplz-tooltip="<?php echo $str ?>">
               <span class="dashicons dashicons-editor-help"></span>
             </span>
 			<?php

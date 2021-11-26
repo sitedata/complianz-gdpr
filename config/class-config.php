@@ -370,13 +370,13 @@ if ( ! class_exists( "cmplz_config" ) ) {
 			if ( $page ) {
 				$fields = cmplz_array_filter_multidimensional( $this->fields, 'source', $page );
 			}
-			$order = 100;
+
 			foreach ( $fields as $fieldname => $field ) {
 				if ( $get_by_fieldname && $fieldname !== $get_by_fieldname ) {
 					continue;
 				}
-				$field = wp_parse_args( $field, array( 'order'=> $order ) );
-				$order++;
+				$field = wp_parse_args( $field, array('order'=> 100 ) );
+
 				if ( $step ) {
 					if ( $section && isset( $field['section'] ) ) {
 						if ( ( $field['step'] == $step
@@ -460,6 +460,7 @@ if ( ! class_exists( "cmplz_config" ) ) {
 					'urgent' => __( 'Not all fields have been entered, or you have not clicked the "finish" button yet.', 'complianz-gdpr' ),
 					'plus_one' => true,
 					'include_in_progress' => true,
+					'dismissible' => false,
 				),
 
 				'no-dnt' => array(
@@ -496,6 +497,7 @@ if ( ! class_exists( "cmplz_config" ) ) {
 					'completed'    => sprintf( __( 'Last cookie scan completed on %s.', 'complianz-gdpr' ), COMPLIANZ::$cookie_admin->get_last_cookie_scan_date() ),
 					'open' => __( 'No cookie scan has been completed yet.', 'complianz-gdpr' ),
 					'include_in_progress' => true,
+					'dismissible' => false,
 				),
 
 				'all-pages-created' => array(
@@ -597,6 +599,7 @@ if ( ! class_exists( "cmplz_config" ) ) {
 					'completed' => __( 'Your site requires a cookie banner, which has been enabled.', 'complianz-gdpr' ),
 					'open' => __( 'Your site does not require a cookie banner.', 'complianz-gdpr' ),
 					'include_in_progress' => true,
+					'dismissible' => false,
 				),
 
 				'pretty-permalinks-error' => array(
@@ -606,6 +609,7 @@ if ( ! class_exists( "cmplz_config" ) ) {
 					'plus_one' => true,
 					'urgent' => __( 'Pretty permalinks are not enabled on your site. This can cause issues with the REST API, used by Complianz.', 'complianz-gdpr' ),
 					'include_in_progress' => true,
+					'dismissible' => false,
 				),
 				'custom-google-maps' => array(
 					'warning_condition' => 'cmplz_uses_google_maps',
@@ -623,6 +627,20 @@ if ( ! class_exists( "cmplz_config" ) ) {
 					'plus_one' => true,
 					'urgent' => sprintf(__( 'We have detected the %s plugin on your website.', 'complianz-gdpr' ),cmplz_detected_cookie_plugin(true)).'&nbsp;'.__( 'As Complianz handles all the functionality this plugin provides, you should disable this plugin to prevent unexpected behaviour.', 'complianz-gdpr' ),
 					'include_in_progress' => true,
+					'dismissible' => false,
+				),
+
+				'advertising-enabled' => array(
+					'warning_condition' => 'cmplz_uses_ad_cookies',
+					'premium' => __( 'With Advertising enabled consider implementing TCF.', 'complianz-gdpr' ) . cmplz_read_more('https://complianz.io/implementing-tcf-on-your-website/'),
+					'include_in_progress' => true,
+					'dismissible' => false,
+				),
+
+				'sync-privacy-statement' => array(
+					'premium' => __( 'Synchronize your Privacy Statement with Complianz.', 'complianz-gdpr' ) . ' <a href="https://complianz.io/l/pricing/?src=cmplz-plugin" target="_blank">' . __('Upgrade to premium', 'complianz-gdpr') . '</a>',
+					'include_in_progress' => true,
+					'dismissible' => false,
 				),
 
 				'bf-notice' => array(
@@ -632,9 +650,30 @@ if ( ! class_exists( "cmplz_config" ) ) {
 					'include_in_progress' => false,
 				),
 
-			));
+				'ecommerce-legal' => array(
+					'warning_condition' => 'cmplz_ecommerce_legal',
+					'premium' => __( 'Legal compliance for Webshops.', 'complianz-gdpr' ) . cmplz_read_more('https://complianz.io/legal-compliance-for-ecommerce/'),
+					'include_in_progress' => true,
+					'dismissible' => false,
+				),
+
+				'configure-tag-manager' => array(
+					'warning_condition' => 'cmplz_uses_google_tagmanager_or_analytics',
+					'premium' => __( 'Learn more about Google Consent Mode.', 'complianz-gdpr' ) . cmplz_read_more('https://complianz.io/configure-consent-mode/'),
+					'include_in_progress' => true,
+					'dismissible' => false,
+				),
+
+				'targeting-multiple-regions' => array(
+					'warning_condition' => 'cmplz_targeting_multiple_regions',
+					'premium' => __( 'Are you targeting multiple regions?', 'complianz-gdpr' ) . cmplz_read_more('/what-regions-do-i-target/'),
+					'include_in_progress' => true,
+					'dismissible' => false,
+				),
+
+			) );
 		}
 
-	}
+	} //class closure
+}
 
-} //class closure

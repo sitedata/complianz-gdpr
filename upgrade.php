@@ -570,6 +570,7 @@ function cmplz_check_upgrade() {
 	}
 
 	if ( $prev_version && version_compare( $prev_version, '6.0.0', '<' ) ) {
+		update_option( 'complianz_enable_dismissible_premium_warnings', true );
 		$custom_scripts = get_option( 'complianz_options_custom-scripts' );
 
 		$scripts['add_script']       = [];
@@ -645,11 +646,7 @@ function cmplz_check_upgrade() {
 			];
 		}
 		update_option( 'complianz_options_custom-scripts', $scripts );
-	}
 
-	if ( $prev_version
-	     && version_compare( $prev_version, '6.0.0', '<' )
-	) {
 		$general_settings                      = get_option( 'complianz_options_general' );
 		$general_settings['enable_migrate_js'] = true;
 		update_option( 'complianz_options_general', $general_settings );
@@ -747,6 +744,7 @@ function cmplz_check_upgrade() {
 			$wizard_settings['compile_statistics'] = 'yes';
 			update_option( 'complianz_options_wizard', $wizard_settings );
 		}
+
 	}
 
 	$banners = cmplz_get_cookiebanners();

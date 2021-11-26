@@ -233,7 +233,7 @@ function cmplz_add_cookiebanner_settings($fields){
 					'complianz' => __( "Use \"Powered by Complianz\"", 'complianz-gdpr' ),
 					'custom' 	=> __( "Upload Custom Logo", 'complianz-gdpr' ).' (300px x 100px)',
 				),
-				'default' => 'hide',
+				'default' => 'complianz',
 			),
 
 			'use_logo_complianz' => array(

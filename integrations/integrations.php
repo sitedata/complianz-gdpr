@@ -275,6 +275,7 @@ $cmplz_integrations_list = apply_filters( 'cmplz_integrations', array(
 		'label'                => 'WP Google Maps',
 		'firstparty_marketing' => false,
 	),
+
 	'woocommerce' => array(
 			'constant_or_function' => 'WC_PLUGIN_FILE',
 			'label'                => 'Woocommerce',
@@ -401,12 +402,6 @@ $cmplz_integrations_list = apply_filters( 'cmplz_integrations', array(
 		'constant_or_function' => 'GF_MIN_WP_VERSION',
 		'label'                => 'Gravity Forms',
 		'firstparty_marketing' => false,
-	),
-
-	'easy-digital-downloads' => array(
-			'constant_or_function' => 'EDD_VERSION',
-			'label'                => 'Easy Digital Downloads',
-			'firstparty_marketing' => false,
 	),
 ) );
 
@@ -652,7 +647,7 @@ function cmplz_add_placeholder_checkbox( $args ) {
 			?>
 			<label tabindex="0" role="button" aria-pressed="false" class="cmplz-checkbox-container <?php echo $disabled ? 'cmplz-disabled' : '' ?>"><?php _e("Placeholder", "complianz-gdpr") ?>
 				<input
-						name="<?php echo esc_attr( $fieldname ) ?>"
+						name="<?php echo esc_html( $fieldname ) ?>"
 						type="hidden"
 						value="0"
 						tabindex="-1"
@@ -660,7 +655,7 @@ function cmplz_add_placeholder_checkbox( $args ) {
 				>
 				<input
 						<?php if ( $disabled ) {echo 'disabled';} ?>
-						name="<?php echo esc_attr($fieldname) ?>"
+						name="<?php echo $fieldname ?>"
 						type="checkbox"
 						value="1"
 						tabindex="-1"
