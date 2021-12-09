@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) or die();
 
-add_action( 'admin_init', 'cmplz_check_upgrade', 10, 2 );
+add_action( 'init', 'cmplz_check_upgrade', 10, 2 );
 
 /**
  * Run an upgrade procedure if the version has changed
@@ -692,6 +692,14 @@ function cmplz_check_upgrade() {
 					'show' => !$banner_item->hide_revoke,
 				);
 
+				if ( !is_array($banner->border_width) ) {
+					$banner->border_width = array(
+						'top'    => 0,
+						'right'  => 0,
+						'bottom' => 0,
+						'left'   => 0,
+					);
+				}
 				if ( !isset($banner->border_width['top']) ) $banner->border_width['top'] = 0;
 				if ( !isset($banner->border_width['right']) ) $banner->border_width['right'] = 0;
 				if ( !isset($banner->border_width['bottom']) ) $banner->border_width['bottom'] = 0;
@@ -735,7 +743,6 @@ function cmplz_check_upgrade() {
 					'show' => true,
 				);
 				$banner->save();
-				$banner->generate_css();
 			}
 		}
 
@@ -747,14 +754,26 @@ function cmplz_check_upgrade() {
 
 	}
 
-	$banners = cmplz_get_cookiebanners();
-	if ( $banners ) {
-		foreach ( $banners as $banner_item ) {
-			$banner              = new CMPLZ_COOKIEBANNER( $banner_item->ID );
-			$banner->generate_css();
+	if ( $prev_version && version_compare( $prev_version, '6.0.2', '<' ) ) {
+		$banners = cmplz_get_cookiebanners();
+		if ( $banners ) {
+			foreach ( $banners as $banner_item ) {
+				$banner = new CMPLZ_COOKIEBANNER( $banner_item->ID );
+				if ( $banner->banner_width == 476 ) {
+					$banner->banner_width = 526;
+					$banner->save();
+				}
+			}
 		}
 	}
 
+	$banners = cmplz_get_cookiebanners();
+	if ( $banners ) {
+		foreach ( $banners as $banner_item ) {
+			$banner = new CMPLZ_COOKIEBANNER( $banner_item->ID );
+			$banner->save();
+		}
+	}
 	do_action( 'cmplz_upgrade', $prev_version );
 	update_option( 'cmplz-current-version', cmplz_version );
 }

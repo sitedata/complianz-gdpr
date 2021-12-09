@@ -24,7 +24,11 @@
 						'status' => array('urgent', 'open'),
 				) );
 				$warning_count = count( $warnings );
-				echo __( 'Consent Management is activated on your site.',  'complianz-gdpr' ) . ' ' . sprintf( _n( "You still have %s task open.", "You still have %s tasks open.", $warning_count, 'complianz-gdpr' ), $warning_count );
+				echo __( 'Consent Management is activated on your site.',  'complianz-gdpr' );
+				if ($warning_count > 0) {
+					echo ' ' . sprintf( _n( "You still have %s task open.", "You still have %s tasks open.", $warning_count, 'complianz-gdpr' ), $warning_count );
+				}
+
 
 			} else {
 				if ( $premium ) {
@@ -36,7 +40,7 @@
 						foreach ($regions as $region => $value) {
 							$laws[] = COMPLIANZ::$config->regions[$region]['law'];
 						}
-						echo sprintf(__( 'Great! Your website is configured for %s.', 'complianz-gdpr'),  implode(', ', $laws));
+						printf( __( 'Great! Your website is configured for %s.', 'complianz-gdpr' ),  implode(', ', $laws) );
 					}
 				}
 			} ?>

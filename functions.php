@@ -116,7 +116,7 @@ if ( ! function_exists( 'cmplz_cookiebanner_category_conditional_helptext' ) ) {
 		if ( cmplz_get_value('country_company') == "FR"
 		) {
 			$text
-				= sprintf( __( "Due to the French CNIL guidelines we suggest using the Accept + View preferences template. For more information, read about the CNIL updated privacy guidelines in this %sarticle%s.",
+				= sprintf( __( "Due to the French CNIL guidelines we suggest using the Accept - Deny - View preferences template. For more information, read about the CNIL updated privacy guidelines in this %sarticle%s.",
                     'complianz-gdpr' ),
                     '<a href="https://complianz.io/cnil-updated-privacy-guidelines/" target="_blank">', "</a>" );
 		}
@@ -829,7 +829,7 @@ if ( !function_exists('cmplz_admin_notice')) {
 													 alt="logo">
 				</div>
 				<div style="margin-left:30px">
-					<?php echo $msg ?>
+					<?php echo wp_kses_post($msg) ?>
 				</div>
 			</div>
 		</div>
@@ -839,7 +839,16 @@ if ( !function_exists('cmplz_admin_notice')) {
 }
 
 if ( ! function_exists( 'cmplz_panel' ) ) {
-
+	/**
+	 * @param string $title
+	 * @param string $html
+	 * @param string $custom_btn
+	 * @param string $validate
+	 * @param bool   $echo
+	 * @param false  $open
+	 *
+	 * @return string|void
+	 */
 	function cmplz_panel($title, $html, $custom_btn = '', $validate = '', $echo = true, $open = false) {
 		if ( $title == '' ) {
 			return '';
@@ -871,32 +880,6 @@ if ( ! function_exists( 'cmplz_panel' ) ) {
 		} else {
 			return $output;
 		}
-
-	}
-}
-
-if ( ! function_exists( 'cmplz_list_item' ) ) {
-
-	function cmplz_list_item( $title, $link, $btn, $selected ) {
-		if ( $title == '' ) {
-			return;
-		}
-		$selected = $selected ? "selected" : '';
-		?>
-
-		<div class="cmplz-panel cmplz-link-panel <?php echo $selected ?>">
-			<div class="cmplz-panel-title">
-				<a class="cmplz-panel-link" href="<?php echo $link ?>">
-                <span class="cmplz-panel-toggle">
-                    <i class="fa fa-edit"></i>
-                    <span class="cmplz-title"><?php echo $title ?></span>
-                 </span>
-				</a>
-
-				<?php echo $btn ?>
-			</div>
-		</div>
-		<?php
 
 	}
 }
@@ -999,10 +982,18 @@ if ( ! function_exists( 'cmplz_uses_only_functional_cookies' ) ) {
 		return COMPLIANZ::$cookie_admin->uses_only_functional_cookies();
 	}
 }
+
 if ( ! function_exists( 'cmplz_uses_ad_cookies' ) ) {
 	function cmplz_uses_ad_cookies() {
 		$wizard_settings = get_option('complianz_options_wizard');
-		return $wizard_settings['uses_ad_cookies'] == 'yes';
+		return isset( $wizard_settings['uses_ad_cookies'] ) ? $wizard_settings['uses_ad_cookies'] === 'yes' : false;
+	}
+}
+
+if ( ! function_exists( 'cmplz_uses_ad_cookies_personalized' ) ) {
+	function cmplz_uses_ad_cookies_personalized() {
+		$wizard_settings = get_option('complianz_options_wizard');
+		return isset( $wizard_settings['uses_ad_cookies_personalized'] ) ? $wizard_settings['uses_ad_cookies_personalized'] === 'yes' : false;
 	}
 }
 
@@ -1870,9 +1861,9 @@ if ( ! function_exists( 'cmplz_download_to_site' ) ) {
 
 if ( ! function_exists( 'cmplz_used_cookies' ) ) {
 	function cmplz_used_cookies() {
-		$services_template = cmplz_get_template( 'cookiepolicy_services.php' );
-		$cookies_row    = cmplz_get_template( 'cookiepolicy_cookies_row.php' );
-		$purpose_row    = cmplz_get_template( 'cookiepolicy_purpose_row.php' );
+		$services_template = cmplz_get_template( 'cookiepolicy/services.php' );
+		$cookies_row    = cmplz_get_template( 'cookiepolicy/cookies_row.php' );
+		$purpose_row    = cmplz_get_template( 'cookiepolicy/purpose_row.php' );
 		$language       = substr( get_locale(), 0, 2 );
 
 		$args = array(
@@ -2355,18 +2346,18 @@ if ( ! function_exists( 'cmplz_uses_statistic_cookies' ) ) {
 
 if ( ! function_exists( 'cmplz_uses_marketing_cookies' ) ) {
 
-    /**
-     * Check if the site uses marketing cookies
-     *
-     * @return bool
-     */
-    function cmplz_uses_marketing_cookies() {
+	/**
+	 * Check if the site uses marketing cookies
+	 *
+	 * @return bool
+	 */
+	function cmplz_uses_marketing_cookies() {
 
-        $uses_marketing_cookies =
-				cmplz_get_value('uses_ad_cookies') === 'yes'
-			|| cmplz_get_value('uses_firstparty_marketing_cookies') === 'yes'
-            || cmplz_get_value('uses_thirdparty_services') === 'yes'
-            || cmplz_get_value('uses_social_media') === 'yes' ;
+		$uses_marketing_cookies
+				= cmplz_get_value( 'uses_ad_cookies' ) === 'yes'
+				  || cmplz_get_value( 'uses_firstparty_marketing_cookies' ) === 'yes'
+				  || cmplz_get_value( 'uses_thirdparty_services' ) === 'yes'
+				  || cmplz_get_value( 'uses_social_media' ) === 'yes';
 
 		return apply_filters( 'cmplz_uses_marketing_cookies', $uses_marketing_cookies );
 	}

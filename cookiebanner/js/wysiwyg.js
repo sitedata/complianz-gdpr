@@ -6,13 +6,14 @@ jQuery(document).ready(function ($) {
 	var cssIndex = 0;
 	var bannerInitialized = false;
 	var consenttype = $('select[name=cmplz_consenttype]').val();
-
+	var typingTimer;
+	var doneTypingInterval = 1000;
 	var hideBanner = $('input[name=cmplz_hide_preview]').is(':checked') || $('input[name=cmplz_disable_cookiebanner]').is(':checked');
-
 	var banner_id = $('input[name=cmplz_banner_id]').val();
 	var manageConsent = $('#cmplz-manage-consent .cmplz-manage-consent.manage-consent-'+banner_id);
 	cmplz_apply_style();
 	cmplzUpdateLinks();
+	cmplz_validate_banner_width();
 	/**
 	 * Make sure the banner is loaded after the css has loaded, but only once.
 	 */
@@ -32,6 +33,8 @@ jQuery(document).ready(function ($) {
 			cmplzShowBanner();
 		}
 	}
+
+
 
 	/**
 	 * The function which handles the localstorage, always triggers a change event on the consenttype field.
@@ -68,11 +71,8 @@ jQuery(document).ready(function ($) {
 				docElement.addClass('cmplz-hidden');
 				for (var pageType in pageLinks) {
 					if ( docElement.hasClass(pageType) ){
-						var curHref = docElement.attr('href');
-						if (pageType==='cookie-statement') {
-							$(this).find('.cmplz-manage-options.tcf').attr('href', pageLinks[pageType]['url']);
-						}
-						docElement.attr('href', curHref.replace('{url}',pageLinks[pageType]['url'] ));
+
+						docElement.attr('href', pageLinks[pageType]['url']+docElement.data('relative_url') );
 						if ( docElement.html() === '{title}') {
 							docElement.html(pageLinks[pageType]['title']);
 						}
@@ -84,14 +84,31 @@ jQuery(document).ready(function ($) {
 		});
 	}
 
+	function cmplz_validate_banner_width(){
+		//dont do this if banner bottom
+		if ($('select[name=cmplz_position]').val()=== 'bottom' ) return;
+
+		//check if cats width is ok
+		let cats_width = document.querySelector('.cmplz-categories').offsetWidth;
+		let message_width = document.querySelector('.cmplz-message').offsetWidth;
+		let banner_width = document.querySelector('.cmplz-cookiebanner').offsetWidth;
+
+		if ( cats_width>0){
+			if (banner_width-42 > cats_width ) {
+				let difference = banner_width-42 - cats_width;
+				let newWidth =  parseInt(banner_width) + parseInt(difference);
+				document.querySelector('input[name=cmplz_banner_width]').value = newWidth;
+				cmplz_apply_style();
+			}
+		}
+	}
+
 	function cmplz_apply_style(){
 		if (processingReset || cssGenerationActive) {
 			return;
 		}
 		cssGenerationActive = true;
 		$('.cmplz-cookiebanner').addClass('reloading');
-
-		// categories-visible
 
 		$.ajax({
 			type: 'POST',
@@ -183,22 +200,37 @@ jQuery(document).ready(function ($) {
 
 	$(document).on('keyup', "input[name='cmplz_header[text]']", function () {
 		$(".cmplz-header .cmplz-title").html($(this).val());
+		clearTimeout(typingTimer);
+		typingTimer = setTimeout(cmplz_validate_banner_width, doneTypingInterval);
 	})
 
 	$(document).on('keyup', "input[name='cmplz_accept']", function () {
 		$(".optin button.cmplz-accept").html($(this).val());
+		clearTimeout(typingTimer);
+		typingTimer = setTimeout(cmplz_validate_banner_width, doneTypingInterval);
 	});
 	$(document).on('keyup', "input[name='cmplz_accept_informational[text]']", function () {
 		$(".optout button.cmplz-accept").html($(this).val());
+		clearTimeout(typingTimer);
+		typingTimer = setTimeout(cmplz_validate_banner_width, doneTypingInterval);
 	});
 	$(document).on('keyup', "input[name='cmplz_dismiss[text]']", function () {
 		$("button.cmplz-deny").html($(this).val());
+		clearTimeout(typingTimer);
+		typingTimer = setTimeout(cmplz_validate_banner_width, doneTypingInterval);
 	});
 	$(document).on('keyup', "input[name='cmplz_revoke[text]']", function () {
 		$("button.cmplz-manage-consent").html($(this).val());
 	});
 	$(document).on('keyup', "input[name='cmplz_view_preferences']", function () {
 		$("button.cmplz-view-preferences").html($(this).val());
+		clearTimeout(typingTimer);
+		typingTimer = setTimeout(cmplz_validate_banner_width, doneTypingInterval);
+	});
+	$(document).on('keyup', "input[name='cmplz_save_preferences']", function () {
+		$("button.cmplz-view-preferences").html($(this).val());
+		clearTimeout(typingTimer);
+		typingTimer = setTimeout(cmplz_validate_banner_width, doneTypingInterval);
 	});
 	$(document).on('keyup', "input[name='cmplz_category_functional']", function () {
 		$(".cmplz-functional .cmplz-category-header h2").html($(this).val());
@@ -233,14 +265,25 @@ jQuery(document).ready(function ($) {
 		$(".cmplz-message").html($(this).val());
 	});
 
+	//on keydown, clear the countdown
+	$('input[type=text], input[type=number]').on('keydown', function () {
+		clearTimeout(typingTimer);
+	});
+
 	$(document).on('keyup',
 		'input[name=cmplz_banner_width], ' +
 		'#cmplz_custom_csseditor,' +
 		'input[type=number].cmplz-border-width, ' +
 		'input[type=number].cmplz-border-radius'
 		, function () {
-			cmplz_apply_style();
+			clearTimeout(typingTimer);
+			typingTimer = setTimeout(cmplz_check_banner_width_and_update_style, doneTypingInterval);
 	});
+
+	function cmplz_check_banner_width_and_update_style(){
+		cmplz_validate_banner_width();
+		cmplz_apply_style();
+	}
 
 	$(document).on('change',
 		'select[name=cmplz_position], ' +

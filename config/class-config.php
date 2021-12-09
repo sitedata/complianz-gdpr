@@ -46,13 +46,7 @@ if ( ! class_exists( "cmplz_config" ) ) {
 				'pinterest' => 'Pinterest',
 			);
 
-		public $stats
-			= array(
-				'google-analytics'   => 'Google Analytics',
-				'google-tag-manager' => 'Tag Manager',
-				'matomo'             => 'Matomo',
-				'clicky'             => 'Clicky',
-			);
+
 
 		/**
 		 * The services for which a placeholder exists in the assets/images/placeholders folder.
@@ -165,15 +159,23 @@ if ( ! class_exists( "cmplz_config" ) ) {
 				"hubspot"         => array( 'js.hs-scripts.com/', 'hbspt.forms.create', 'js.hsforms.net','track.hubspot.com','js.hs-analytics.net'),
 				"calendly"         => array( 'assets.calendly.com' ),
 			);
-
+		public $stats
+			= array(
+				'google-analytics'   => 'Google Analytics',
+				'google-tag-manager' => 'Tag Manager',
+				'matomo'             => 'Matomo',
+				'clicky'             => 'Clicky',
+				'yandex'             => 'Yandex',
+			);
 		public $stats_markers = array(
 				'google-analytics'   => array(
 					'google-analytics.com/ga.js',
 					'www.google-analytics.com/analytics.js',
 					'_getTracker',
+					"gtag('js'",
 				),
 				'google-tag-manager' => array(
-					'googletagmanager.com/gtag/js',
+					'gtm.start',
 					'gtm.js',
 				),
 				'matomo' => array( 'piwik.js', 'matomo.js' ),
@@ -370,13 +372,13 @@ if ( ! class_exists( "cmplz_config" ) ) {
 			if ( $page ) {
 				$fields = cmplz_array_filter_multidimensional( $this->fields, 'source', $page );
 			}
-
+			$order = 100;
 			foreach ( $fields as $fieldname => $field ) {
 				if ( $get_by_fieldname && $fieldname !== $get_by_fieldname ) {
 					continue;
 				}
-				$field = wp_parse_args( $field, array('order'=> 100 ) );
-
+				$field = wp_parse_args( $field, array( 'order'=> $order ) );
+				$order++;
 				if ( $step ) {
 					if ( $section && isset( $field['section'] ) ) {
 						if ( ( $field['step'] == $step
@@ -631,15 +633,15 @@ if ( ! class_exists( "cmplz_config" ) ) {
 				),
 
 				'advertising-enabled' => array(
-					'warning_condition' => 'cmplz_uses_ad_cookies',
-					'premium' => __( 'With Advertising enabled consider implementing TCF.', 'complianz-gdpr' ) . cmplz_read_more('https://complianz.io/implementing-tcf-on-your-website/'),
-					'include_in_progress' => true,
+					'warning_condition' => 'cmplz_uses_ad_cookies_personalized',
+					'premium' => __( 'Are you showing ads on your site? Consider implementing TCF.', 'complianz-gdpr' ) . cmplz_read_more('https://complianz.io/implementing-tcf-on-your-website/'),
+					'include_in_progress' => false,
 					'dismissible' => false,
 				),
 
 				'sync-privacy-statement' => array(
 					'premium' => __( 'Synchronize your Privacy Statement with Complianz.', 'complianz-gdpr' ) . ' <a href="https://complianz.io/l/pricing/?src=cmplz-plugin" target="_blank">' . __('Upgrade to premium', 'complianz-gdpr') . '</a>',
-					'include_in_progress' => true,
+					'include_in_progress' => false,
 					'dismissible' => false,
 				),
 
@@ -652,22 +654,22 @@ if ( ! class_exists( "cmplz_config" ) ) {
 
 				'ecommerce-legal' => array(
 					'warning_condition' => 'cmplz_ecommerce_legal',
-					'premium' => __( 'Legal compliance for Webshops.', 'complianz-gdpr' ) . cmplz_read_more('https://complianz.io/legal-compliance-for-ecommerce/'),
-					'include_in_progress' => true,
+					'premium' => __( 'Legal compliance for webshops.', 'complianz-gdpr' ) . cmplz_read_more('https://complianz.io/legal-compliance-for-ecommerce/'),
+					'include_in_progress' => false,
 					'dismissible' => false,
 				),
 
 				'configure-tag-manager' => array(
 					'warning_condition' => 'cmplz_uses_google_tagmanager_or_analytics',
 					'premium' => __( 'Learn more about Google Consent Mode.', 'complianz-gdpr' ) . cmplz_read_more('https://complianz.io/configure-consent-mode/'),
-					'include_in_progress' => true,
+					'include_in_progress' => false,
 					'dismissible' => false,
 				),
 
 				'targeting-multiple-regions' => array(
 					'warning_condition' => 'cmplz_targeting_multiple_regions',
 					'premium' => __( 'Are you targeting multiple regions?', 'complianz-gdpr' ) . cmplz_read_more('/what-regions-do-i-target/'),
-					'include_in_progress' => true,
+					'include_in_progress' => false,
 					'dismissible' => false,
 				),
 

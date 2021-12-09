@@ -305,7 +305,7 @@ $cmplz_integrations_list = apply_filters( 'cmplz_integrations', array(
 
 	'google-analytics-dashboard-for-wp' => array(
 		'constant_or_function' => 'EXACTMETRICS_VERSION',
-		'label'                => 'Google Analytics Dashboard for WP',
+		'label'                => 'ExactMetrics',
 		'firstparty_marketing' => false,
 	),
 
@@ -556,8 +556,6 @@ function cmplz_integrations() {
 	$statistics = cmplz_get_value( 'compile_statistics' );
 	if ( $statistics === 'google-analytics' ) {
 		require_once( 'statistics/google-analytics.php' );
-	} elseif ( $statistics === 'google-tag-manager' ) {
-		require_once( 'statistics/google-tagmanager.php' );
 	}
 
 }
@@ -647,7 +645,7 @@ function cmplz_add_placeholder_checkbox( $args ) {
 			?>
 			<label tabindex="0" role="button" aria-pressed="false" class="cmplz-checkbox-container <?php echo $disabled ? 'cmplz-disabled' : '' ?>"><?php _e("Placeholder", "complianz-gdpr") ?>
 				<input
-						name="<?php echo esc_html( $fieldname ) ?>"
+						name="<?php echo esc_attr( $fieldname ) ?>"
 						type="hidden"
 						value="0"
 						tabindex="-1"
@@ -655,7 +653,7 @@ function cmplz_add_placeholder_checkbox( $args ) {
 				>
 				<input
 						<?php if ( $disabled ) {echo 'disabled';} ?>
-						name="<?php echo $fieldname ?>"
+						name="<?php echo esc_attr($fieldname) ?>"
 						type="checkbox"
 						value="1"
 						tabindex="-1"
@@ -801,13 +799,7 @@ function cmplz_get_service_by_src( $src ) {
 function cmplz_maybe_update_css(){
 	$integrations_changed = get_option('cmplz_integrations_changed', false );
 	if ( $integrations_changed ) {
-		$banners = cmplz_get_cookiebanners();
-		if ( $banners ) {
-			foreach ( $banners as $banner_item ) {
-				$banner = new CMPLZ_COOKIEBANNER( $banner_item->ID );
-				$banner->generate_css();
-			}
-		}
+		cmplz_update_all_banners();
 	}
 	update_option('cmplz_integrations_changed', false );
 }

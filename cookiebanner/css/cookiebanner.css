@@ -111,13 +111,6 @@
   display: grid;
   grid-gap: 10px;
 }
-.cmplz-cookiebanner .cmplz-header h1,
-.cmplz-cookiebanner .cmplz-body h1,
-.cmplz-cookiebanner .cmplz-header h2,
-.cmplz-cookiebanner .cmplz-body h2 {
-  margin: 10px 0;
-  padding: initial;
-}
 .cmplz-cookiebanner a {
   transition: initial;
 }
@@ -175,9 +168,10 @@
   font-weight: 500;
 }
 .cmplz-cookiebanner .cmplz-close {
+  line-height: initial;
   justify-self: end;
   grid-column-start: 3;
-  font-size: 28px;
+  font-size: 22px;
   cursor: pointer;
   width: initial;
   height: initial;
@@ -189,6 +183,8 @@
 }
 .cmplz-cookiebanner .cmplz-close:hover {
   text-decoration: none;
+  line-height: initial;
+  font-size: 22px;
 }
 .cmplz-cookiebanner .cmplz-message {
   word-wrap: break-word;
@@ -213,6 +209,12 @@
 .cmplz-cookiebanner .cmplz-categories .cmplz-category {
   background-color: rgba(239, 239, 239, 0.5);
 }
+.cmplz-cookiebanner .cmplz-categories .cmplz-category .cmplz-description-statistics-anonymous {
+  display: none;
+}
+.cmplz-cookiebanner .cmplz-categories .cmplz-category .cmplz-description-statistics {
+  display: block;
+}
 .cmplz-cookiebanner .cmplz-categories .cmplz-category:not(:last-child) {
   margin-bottom: 10px;
 }
@@ -224,7 +226,7 @@
   grid-gap: 0;
   padding: 10px;
 }
-.cmplz-cookiebanner .cmplz-categories .cmplz-category .cmplz-category-header h2 {
+.cmplz-cookiebanner .cmplz-categories .cmplz-category .cmplz-category-header .cmplz-category-title {
   font-weight: 500;
   grid-column-start: 1;
   justify-self: start;
@@ -306,6 +308,7 @@
   font-size: var(--cmplz_button_font_size);
   font-weight: 500;
   text-decoration: none;
+  text-align: center;
 }
 .cmplz-cookiebanner .cmplz-buttons .cmplz-btn:hover {
   text-decoration: none;

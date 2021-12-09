@@ -69,7 +69,6 @@
   box-shadow: 0 0 5px 5px rgba(222, 222, 222, 0.2);
   position: sticky;
   top: 50px;
-  max-height: calc(100vh - 87px);
   height: 100%;
   min-height: 480px;
 }
@@ -498,6 +497,7 @@
   position: relative;
 }
 #cmplz-content-area .cmplz-section-content .cmplz-scroll .cmplz-settings-item .cmplz-settings-body .cmplz-settings-overlay {
+  z-index: 99;
   display: grid;
   grid-template-columns: 680px auto;
   position: absolute;
@@ -546,6 +546,9 @@
 }
 #cmplz-content-area .cmplz-link-to-menu-table select {
   grid-column-start: 2;
+}
+#cmplz-content-area .cmplz-scan-count {
+  padding: 0 5px;
 }
 #cmplz-content-area .cmplz-cookies-table h2 {
   font-weight: normal;

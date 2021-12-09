@@ -10,6 +10,13 @@
 .cmplz-cookiebanner .cmplz-deny {
   display: none;
 }
+.cmplz-cookiebanner .cmplz-categories .cmplz-category .cmplz-category-header .cmplz-title {
+  justify-self: left;
+  grid-column-start: 1;
+}
+.cmplz-cookiebanner .cmplz-categories .cmplz-category .cmplz-category-header .cmplz-always-active {
+  justify-self: right;
+}
 .cmplz-cookiebanner .cmplz-categories .cmplz-category .cmplz-category-header .cmplz-description {
   padding: 0;
 }
@@ -27,7 +34,7 @@
 .cmplz-cookiebanner .cmplz-buttons a.cmplz-btn.cmplz-manage-options.tcf {
   display: flex;
 }
-.cmplz-cookiebanner .cmplz-categories .cmplz-category .cmplz-category-header h2 {
+.cmplz-cookiebanner .cmplz-categories .cmplz-category .cmplz-category-header .cmplz-category-title {
   margin: 0 0 5px 0;
 }
 @media (min-width: 1024px) {
