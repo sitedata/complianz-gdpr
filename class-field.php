@@ -3223,8 +3223,12 @@ if ( ! class_exists( "cmplz_field" ) ) {
 			if ( ! isset( $args['comment'] ) ) {
 				return;
 			}
+			$warning_class = '';
+			if (isset( $args['comment_status']) && $args['comment_status']==='warning'){
+				$warning_class='cmplz-comment-warning';
+			}
 			?>
-			<div class="cmplz-comment"><?php echo $args['comment'] ?></div>
+			<div class="cmplz-comment <?=$warning_class?>"><?php echo $args['comment'] ?></div>
 			<?php
 		}
 

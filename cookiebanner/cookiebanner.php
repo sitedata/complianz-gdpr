@@ -3,14 +3,12 @@
  * Regenerate css and update banner version for all banners
  */
 
-if ( !function_exists('cmplz_update_all_banners') ) {
-	function cmplz_update_all_banners() {
-		$banners = cmplz_get_cookiebanners();
-		if ( $banners ) {
-			foreach ( $banners as $banner_item ) {
-				$banner = new CMPLZ_COOKIEBANNER( $banner_item->ID );
-				$banner->save();
-			}
+function cmplz_update_all_banners() {
+	$banners = cmplz_get_cookiebanners();
+	if ( $banners ) {
+		foreach ( $banners as $banner_item ) {
+			$banner = new CMPLZ_COOKIEBANNER( $banner_item->ID );
+			$banner->save();
 		}
 	}
 }

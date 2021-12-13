@@ -365,12 +365,6 @@ if ( ! class_exists( "cmplz_cookiebanner" ) ) {
 			if (isset($string['text'])) {
 				$string = $string['text'];
 			}
-
-			//e.g. When elementor integration is active, preferences may pass an array without the text entry here, causing an error with WPML
-			if ( is_array( $string ) ) {
-				return;
-			}
-
 			$key = $this->translation_id;
 			//polylang
 			if ( function_exists( "pll_register_string" ) ) {
@@ -959,6 +953,10 @@ if ( ! class_exists( "cmplz_cookiebanner" ) ) {
 				}
 			}
 
+			if (cmplz_get_value( 'consent_per_service' ) !== 'yes' ) {
+				$css_files[] = "settings/hide-manage-services$minified.css";
+			}
+
 			if ( cmplz_tcf_active() ) {
 				$css_files[] = "tcf$minified.css";
 			}
@@ -970,7 +968,6 @@ if ( ! class_exists( "cmplz_cookiebanner" ) ) {
 					$css_files[] = "settings/animation/{$this->animation}$minified.css";
 				}
 			}
-
 			if ( isset($this->functional_text['show']) && !$this->functional_text['show'] )  $css_files[] = "settings/categories/hide-functional_text$minified.css";
 			if ( isset($this->category_prefs['show']) && !$this->category_prefs['show'] || !cmplz_uses_preferences_cookies() ) $css_files[] = "settings/categories/hide-preferences$minified.css";
 			if ( isset($this->category_stats['show']) && !$this->category_stats['show'] || !cmplz_uses_statistic_cookies() ) $css_files[] = "settings/categories/hide-statistics$minified.css";
@@ -1143,37 +1140,39 @@ if ( ! class_exists( "cmplz_cookiebanner" ) ) {
 			}
 
 			$region = COMPLIANZ::$company->get_default_region();
-			$disable_cookiebanner = boolval($this->disable_cookiebanner) || is_preview() || cmplz_is_pagebuilder_preview() || isset($_GET["cmplz_safe_mode"]);
+
+
 			$output = array(
-				'prefix'               => COMPLIANZ::$cookie_admin->get_cookie_prefix(),
-				'user_banner_id'       => apply_filters( 'cmplz_user_banner_id', cmplz_get_default_banner_id() ),
-				'set_cookies'          => apply_filters( 'cmplz_set_cookies_on_consent', array() ), //cookies to set on acceptance, in order array('cookiename=>array('consent value', 'revoke value');
-				'block_ajax_content'   => cmplz_get_value( 'enable_cookieblocker_ajax' ),
-				'banner_version'       => $this->banner_version,
-				'version'              => cmplz_version,
-				'store_consent'        => $store_consent,
-				'do_not_track'         => apply_filters( 'cmplz_dnt_enabled', false ),
-				'consenttype'          => COMPLIANZ::$company->get_default_consenttype(),
-				'region'               => $region,
-				'geoip'                => cmplz_geoip_enabled(),
-				'dismiss_timeout'      => $this->dismiss_timeout,
-				'disable_cookiebanner' => $disable_cookiebanner,
-				'soft_cookiewall'      => boolval($this->soft_cookiewall),
-				'dismiss_on_scroll'    => boolval($this->dismiss_on_scroll),
-				'cookie_expiry'        => cmplz_get_value( 'cookie_expiry' ),
-				'url'                  => get_rest_url() . 'complianz/v1/',
-				'locale'               => 'lang='.substr( get_locale(), 0, 2 ).'&locale='.get_locale(),
-				'set_cookies_on_root'  => cmplz_get_value( 'set_cookies_on_root' ),
-				'cookie_domain'        => COMPLIANZ::$cookie_admin->get_cookie_domain(),
-				'current_policy_id'    => COMPLIANZ::$cookie_admin->get_active_policy_id(),
-				'cookie_path'          => COMPLIANZ::$cookie_admin->get_cookie_path(),
-				'tcf_active'           => cmplz_tcf_active(),
-				'placeholdertext'      => cmplz_get_value( 'blocked_content_text' ),
-				'css_file'             => $upload_url . '/complianz/css/banner-banner_id-type.css?v='.$this->banner_version.$script_debug,
-				'page_links'           => $page_links,
-				'tm_categories'        => COMPLIANZ::$cookie_admin->uses_google_tagmanager(),
-				'forceEnableStats'     => !COMPLIANZ::$cookie_admin->cookie_warning_required_stats( $region ),
-				'preview'              => false,
+				'prefix'                  => COMPLIANZ::$cookie_admin->get_cookie_prefix(),
+				'user_banner_id'          => apply_filters( 'cmplz_user_banner_id', cmplz_get_default_banner_id() ),
+				'set_cookies'             => apply_filters( 'cmplz_set_cookies_on_consent', array() ),
+				//cookies to set on acceptance, in order array('cookiename=>array('consent value', 'revoke value');
+				'block_ajax_content'      => cmplz_get_value( 'enable_cookieblocker_ajax' ),
+				'banner_version'          => $this->banner_version,
+				'version'                 => cmplz_version,
+				'store_consent'           => $store_consent,
+				'do_not_track'            => apply_filters( 'cmplz_dnt_enabled', false ),
+				'consenttype'             => COMPLIANZ::$company->get_default_consenttype(),
+				'region'                  => $region,
+				'geoip'                   => cmplz_geoip_enabled(),
+				'dismiss_timeout'         => $this->dismiss_timeout,
+				'disable_cookiebanner'    => boolval( $this->disable_cookiebanner ),
+				'soft_cookiewall'         => boolval( $this->soft_cookiewall ),
+				'dismiss_on_scroll'       => boolval( $this->dismiss_on_scroll ),
+				'cookie_expiry'           => cmplz_get_value( 'cookie_expiry' ),
+				'url'                     => get_rest_url() . 'complianz/v1/',
+				'locale'                  => 'lang=' . substr( get_locale(), 0, 2 ) . '&locale=' . get_locale(),
+				'set_cookies_on_root'     => cmplz_get_value( 'set_cookies_on_root' ),
+				'cookie_domain'           => COMPLIANZ::$cookie_admin->get_cookie_domain(),
+				'current_policy_id'       => COMPLIANZ::$cookie_admin->get_active_policy_id(),
+				'cookie_path'             => COMPLIANZ::$cookie_admin->get_cookie_path(),
+				'tcf_active'              => cmplz_tcf_active(),
+				'placeholdertext'         => COMPLIANZ::$cookie_blocker->blocked_content_text(),
+				'css_file'                => $upload_url . '/complianz/css/banner-banner_id-type.css?v=' . $this->banner_version . $script_debug,
+				'page_links'              => $page_links,
+				'tm_categories'           => COMPLIANZ::$cookie_admin->uses_google_tagmanager(),
+				'forceEnableStats'        => !COMPLIANZ::$cookie_admin->cookie_warning_required_stats( $region ),
+				'preview'                 => false,
 				'clean_cookies'           => cmplz_get_value( 'disable_cookie_block' ) != 1 && cmplz_get_value( 'consent_per_service' ) === 'yes',
 			);
 

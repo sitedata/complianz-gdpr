@@ -303,12 +303,10 @@ $this->fields = $this->fields + array(
 			'revoke_consent_onchange' => true,
 			'default'                 => '',
 			'label'                   => __( "Does the following apply to your website?", 'complianz-gdpr' ),
-			'tooltip'                 => __( "When checking all three checkboxes, we will set statistics to anonymous. Based on your region, statistics might be set before consent.", 'complianz-gdpr' ),
-			'comment'                 => __( "By design, IP anonymization is always enabled for GA4 properties.", 'complianz-gdpr' ),
 			'options'                 => array(
 				'accepted'             => __( 'I have accepted the Google data processing amendment', 'complianz-gdpr' ),
 				'no-sharing'           => __( 'Google is not allowed to use this data for other Google services', 'complianz-gdpr' ),
-				'ip-addresses-blocked' => __( 'IP addresses are anonymized or let Complianz do this for me.', 'complianz-gdpr' ),
+				'ip-addresses-blocked' => __( 'IP addresses are anonymized.', 'complianz-gdpr' ),
 			),
 			'help'                    => __( 'If you select the option that IP addresses are anonymized, and let Complianz handle the statistics, Complianz will ensure that ip addresses are anonymized by default, unless consent is given for statistics.', 'complianz-gdpr' )
 			                             . cmplz_read_more( 'https://complianz.io/how-to-configure-google-analytics-for-gdpr/' ),
@@ -542,6 +540,23 @@ $this->fields = $this->fields + array(
 			),
 		),
 
+		'consent_per_service' => array(
+			'step'               => STEP_COOKIES,
+			'section'            => 4,
+			'source'             => 'wizard',
+			'translatable'       => true,
+			'type'               => 'radio',
+			'options'            => $this->yes_no,
+			'default'            => 'no',
+			'label'              => __( "Do you want to ask for consent or offer opt-out per service?", 'complianz-gdpr' ),
+			'tooltip'              => __( "The default configuration is 'consent per category'. This currently compliant with your selected regions.", 'complianz-gdpr' ),
+			'help'               => __( "For a granular approach you can enable 'consent per service', a unique way to control cookies real-time.", 'complianz-gdpr' ).cmplz_read_more('https://complianz.io/consent-per-service/'),
+			'help_status'        => 'warning',
+			'comment'            => __("This feature includes real-time cookie removal with the CookieShredder.","complianz-gdpr").' '.__("All non-functional cookies get deleted from the browser.","complianz-gdpr").' '.__("This could break website functionality.", 'complianz-gdpr').cmplz_read_more('https://complianz.io/consent-per-service/'),
+			'comment_status'     => 'warning',
+			'callback_condition' => 'NOT cmplz_uses_only_functional_cookies'
+		),
+
 		'uses_thirdparty_services' => array(
 			'step'                    => STEP_COOKIES,
 			'section'                 => 4,
@@ -551,10 +566,8 @@ $this->fields = $this->fields + array(
 			'revoke_consent_onchange' => true,
 			'options'                 => $this->yes_no,
 			'default'                 => '',
-			'label'                   => __( "Does your website use third-party services?",
-				'complianz-gdpr' ),
-			'tooltip'                    => __( "e.g. services like Google Fonts, Maps or reCAPTCHA usually place cookies.",
-				'complianz-gdpr' ),
+			'label'                   => __( "Does your website use third-party services?", 'complianz-gdpr' ),
+			'tooltip'                 => __( "e.g. services like Google Fonts, Maps or reCAPTCHA usually place cookies.", 'complianz-gdpr' ),
 		),
 
 		'thirdparty_services_on_site' => array(
@@ -758,9 +771,7 @@ $this->fields = $this->fields + array(
 			'translatable'       => true,
 			'type'               => 'cookies',
 			'default'            => '',
-			'label'              => __( "Add the used cookies here",
-				'complianz-gdpr' ),
-			'time'               => 5,
+			'label'              => __( "Add the used cookies here", 'complianz-gdpr' ),
 		),
 
 		'used_services' => array(
@@ -770,9 +781,7 @@ $this->fields = $this->fields + array(
 			'translatable'       => true,
 			'type'               => 'services',
 			'default'            => '',
-			'label'              => __( "Add the services to which your cookies belong here",
-				'complianz-gdpr' ),
-			'time'               => 5,
+			'label'              => __( "Add the services to which your cookies belong here", 'complianz-gdpr' ),
 		),
 
 		'create_pages' => array(

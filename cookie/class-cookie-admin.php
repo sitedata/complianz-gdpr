@@ -61,6 +61,7 @@ if ( ! class_exists( "cmplz_cookie_admin" ) ) {
 			add_action( 'cmplz_tagmanager_script', array( $this, 'get_tagmanager_script' ), 10 );
 			add_action( 'cmplz_before_statistics_script', array( $this, 'add_gtag_js' ), 10 );
 			add_action( 'cmplz_before_statistics_script', array( $this, 'add_clicky_js' ), 10 );
+			add_filter( 'cmplz_service_category', array( $this, 'add_category_for_stats' ), 10, 3 );
 			add_action( 'wp_ajax_cmplz_edit_item', array( $this, 'ajax_edit_item' ) );
 			add_action( 'wp_ajax_cmplz_get_list', array( $this, 'ajax_get_list' ) );
 			add_filter( 'cmplz_consenttype', array( $this, 'maybe_filter_consenttype' ), 10, 2 );
@@ -1266,7 +1267,7 @@ if ( ! class_exists( "cmplz_cookie_admin" ) ) {
 				$domain = substr( $domain, 0, - 1 );
 			}
 
-			return apply_filters('cmplz_cookie_domain', $domain);
+			return $domain;
 		}
 
 		/**
@@ -1981,6 +1982,28 @@ if ( ! class_exists( "cmplz_cookie_admin" ) ) {
 			return apply_filters( 'cmplz_statistics_category', $category );
 		}
 
+		/**
+		 *
+		 * Add script classes based on settings, so stats can be activated if no consent is required
+		 *
+		 * @param $class
+		 * @param $match
+		 * @param $found
+		 *
+		 * @return string
+		 */
+
+		public function add_category_for_stats( $category, $match, $found ) {
+			$stats_tags = COMPLIANZ::$config->stats_markers;
+			foreach ( $stats_tags as $type => $markers ) {
+				if ( in_array( $found, $markers ) ) {
+					$category = $this->get_statistics_category();
+				}
+			}
+
+			return $category;
+		}
+
 		public function inline_cookie_script() {
 			//based on the script classes, the statistics will get added on consent, or without consent
 			$category    = $this->get_statistics_category();
@@ -2134,9 +2157,6 @@ if ( ! class_exists( "cmplz_cookie_admin" ) ) {
 				$consent_mode = cmplz_consent_mode() ? '-consent-mode' : '';
 				$code         = esc_attr( cmplz_get_value( "UA_code" ) );
 				$anonymize_ip = $this->google_analytics_always_block_ip() ? "'anonymizeIp': true" : "";
-				if ( substr( strtoupper($code), 0, 2) === 'G-' ) {
-					$anonymize_ip = '';
-				}
 				$enable_tcf_support = cmplz_tcf_active() ? 'true' : 'false';
 				$script       = cmplz_get_template( "statistics/gtag$consent_mode.js" );
 				$script       = str_replace( array('{G_code}', '{anonymize_ip}', '{enable_tcf_support}'), array($code, $anonymize_ip, $enable_tcf_support), $script );
@@ -2393,7 +2413,7 @@ if ( ! class_exists( "cmplz_cookie_admin" ) ) {
 
 		private function parse_for_statistics_settings( $html ) {
 
-			if ( strpos( $html, 'gtm.js' ) !== false || strpos( $html, 'gtm.start' ) !== false
+			if ( strpos( $html, 'gtm.js' ) !== false || strpos( $html, 'gtag/js' ) !== false
 			) {
 				update_option( 'cmplz_detected_stats_type', true );
 
@@ -2407,7 +2427,7 @@ if ( ! class_exists( "cmplz_cookie_admin" ) ) {
 				}
 			}
 
-			if ( strpos( $html, 'analytics.js' ) !== false || strpos( $html, 'ga.js' ) !== false || strpos( $html, '_getTracker' ) !== false ) {
+			if ( strpos( $html, 'analytics.js' ) !== false || strpos( $html, 'ga.js' ) !== false || strpos( $html, 'gtag/js' ) !== false ) {
 				update_option( 'cmplz_detected_stats_type', true );
 
 				$pattern = '/(\'|")(UA-[0-9]{8}-[0-9]{1})(\'|")/i';

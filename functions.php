@@ -710,6 +710,7 @@ if ( ! function_exists( 'cmplz_conclusion' ) ) {
 				var timeSmall = 0;
 
 				jQuery(".cmplz-conclusion__check").each(function(){
+					console.log(this);
 					jQuery(firstText).css('opacity', 1);
 					var that = this;
 					time += getRandomInt(5, 10) * 100;;
@@ -725,6 +726,8 @@ if ( ! function_exists( 'cmplz_conclusion' ) ) {
 						}, timeSmall );
 						timeSmall = getRandomInt(5, 10) * 100;
 					}, time);
+
+					console.log(Math.floor(time));
 				});
 
 				function getRandomInt(min, max) {
@@ -1296,7 +1299,6 @@ if ( ! function_exists( 'cmplz_is_pagebuilder_preview' ) ) {
 		     || isset( $_GET['vcv-action'] )
 		     || isset( $_GET['fl_builder'] )
 		     || isset( $_GET['tve'] )
-		     || isset( $_GET['ct_builder'] )
 		) {
 			$preview = true;
 		}
@@ -1833,20 +1835,23 @@ if ( ! function_exists( 'cmplz_used_cookies' ) ) {
 		}
 
 		$cookies = COMPLIANZ::$cookie_admin->get_cookies_by_service( $args );
+		$use_cdb_links = cmplz_get_value( 'use_cdb_links' ) === 'yes';
+		$consent_per_service = cmplz_get_value( 'consent_per_service' ) === 'yes';
+		$cookie_list = COMPLIANZ::$cookie_blocker->cookie_list;
 		$servicesHTML = '';
 		foreach ( $cookies as $serviceID => $serviceData ) {
+			$serviceCheckboxClass = $consent_per_service ? '' : 'cmplz-hidden';
 			$has_empty_cookies = false;
 			$allPurposes = array();
 			$service    = new CMPLZ_SERVICE( $serviceID, substr( get_locale(), 0, 2 ) );
             $cookieHTML = "";
 			foreach ( $serviceData as $purpose => $service_cookies ) {
-
 				$cookies_per_purpose_HTML = "";
 				foreach ( $service_cookies as $cookie ) {
 					$has_empty_cookies = $has_empty_cookies || strlen( $cookie->retention ) == 0;
 					$link_open         = $link_close = '';
 
-					if ( cmplz_get_value( 'use_cdb_links' ) === 'yes' && strlen( $cookie->slug ) !== 0
+					if ( $use_cdb_links && strlen( $cookie->slug ) !== 0
 					) {
 						$service_slug = ( strlen( $service->slug ) === 0 ) ? 'unknown-service' : $service->slug;
 						$link_open
@@ -1875,7 +1880,11 @@ if ( ! function_exists( 'cmplz_used_cookies' ) ) {
 				array_push($allPurposes, $purpose);
 			}
 
-			$service_name = $service->ID && strlen( $service->name ) > 0 ? $service->name : __( 'Miscellaneous', 'complianz-gdpr' );
+			$service_name = $service->name;
+			if (!$service->ID || strlen( $service->name ) == 0){
+				$service_name = __( 'Miscellaneous', 'complianz-gdpr' );
+				$serviceCheckboxClass = 'cmplz-hidden';
+			}
 
 			$sharing = '';
 			if ( $service_name === 'Complianz' ) {
@@ -1897,7 +1906,7 @@ if ( ! function_exists( 'cmplz_used_cookies' ) ) {
 			$purposeDescription = ( ( strlen( $service_name ) > 0 ) && ( strlen( $service->serviceType ) > 0 ) )
 				? sprintf( _x( "We use %s for %s.", 'Legal document cookie policy', 'complianz-gdpr' ), $service_name, $service->serviceType ) : '';
 
-			if ( cmplz_get_value( 'use_cdb_links' ) === 'yes'
+			if ( $use_cdb_links
 			     && strlen( $service->slug ) !== 0
 			     && $service->slug !== 'unknown-service'
 			) {
@@ -1908,22 +1917,37 @@ if ( ! function_exists( 'cmplz_used_cookies' ) ) {
 				$p_key = array_search(__( 'Purpose pending investigation', 'complianz-gdpr' ), $allPurposes);
 				if ($p_key!==false) unset($allPurposes[$p_key]);
 			}
+
 			$allPurposes = implode (", ", $allPurposes);
 			$service_slug = str_replace(' ', '-', strtolower($service_name));
+			if ( isset($cookie_list['marketing'][sanitize_title($service->name)]) ){
+				$topCategory = 'marketing';
+			} else if ( isset($cookie_list['statistics'][sanitize_title($service->name)]) ) {
+				$topCategory = 'statistics';
+			} else if ( isset($cookie_list['preferences'][sanitize_title($service->name)]) ) {
+				$topCategory = 'preferences';
+			} else {
+				$topCategory = 'functional';
+			}
+
 			$servicesHTML .= str_replace( array(
 				'{service}',
 				'{service_slug}',
 				'{sharing}',
 				'{purposeDescription}',
 				'{cookies}',
-				'{allPurposes}'
+				'{allPurposes}',
+				'{serviceCheckboxClass}',
+				'{topCategory}'
 			), array(
 				$service_name,
 				$service_slug,
 				$sharing,
 				$purposeDescription,
 				$cookieHTML,
-				$allPurposes
+				$allPurposes,
+				$serviceCheckboxClass,
+				$topCategory
 			), $services_template );
 		}
 

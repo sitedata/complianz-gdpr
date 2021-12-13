@@ -46,7 +46,13 @@ if ( ! class_exists( "cmplz_config" ) ) {
 				'pinterest' => 'Pinterest',
 			);
 
-
+		public $stats
+			= array(
+				'google-analytics'   => 'Google Analytics',
+				'google-tag-manager' => 'Tag Manager',
+				'matomo'             => 'Matomo',
+				'clicky'             => 'Clicky',
+			);
 
 		/**
 		 * The services for which a placeholder exists in the assets/images/placeholders folder.
@@ -159,23 +165,15 @@ if ( ! class_exists( "cmplz_config" ) ) {
 				"hubspot"         => array( 'js.hs-scripts.com/', 'hbspt.forms.create', 'js.hsforms.net','track.hubspot.com','js.hs-analytics.net'),
 				"calendly"         => array( 'assets.calendly.com' ),
 			);
-		public $stats
-			= array(
-				'google-analytics'   => 'Google Analytics',
-				'google-tag-manager' => 'Tag Manager',
-				'matomo'             => 'Matomo',
-				'clicky'             => 'Clicky',
-				'yandex'             => 'Yandex',
-			);
+
 		public $stats_markers = array(
 				'google-analytics'   => array(
 					'google-analytics.com/ga.js',
 					'www.google-analytics.com/analytics.js',
 					'_getTracker',
-					"gtag('js'",
 				),
 				'google-tag-manager' => array(
-					'gtm.start',
+					'googletagmanager.com/gtag/js',
 					'gtm.js',
 				),
 				'matomo' => array( 'piwik.js', 'matomo.js' ),

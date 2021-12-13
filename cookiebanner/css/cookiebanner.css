@@ -209,6 +209,12 @@
 .cmplz-cookiebanner .cmplz-categories .cmplz-category {
   background-color: rgba(239, 239, 239, 0.5);
 }
+.cmplz-cookiebanner .cmplz-categories .cmplz-category .cmplz-description-statistics-anonymous {
+  display: none;
+}
+.cmplz-cookiebanner .cmplz-categories .cmplz-category .cmplz-description-statistics {
+  display: block;
+}
 .cmplz-cookiebanner .cmplz-categories .cmplz-category:not(:last-child) {
   margin-bottom: 10px;
 }
@@ -265,10 +271,7 @@
 .cmplz-cookiebanner .cmplz-categories .cmplz-category[open] .cmplz-icon.cmplz-open {
   transform: rotate(180deg);
 }
-.cmplz-cookiebanner .cmplz-categories .cmplz-category summary::marker {
-  display: none;
-  content: '';
-}
+.cmplz-cookiebanner .cmplz-categories .cmplz-category summary::marker,
 .cmplz-cookiebanner .cmplz-categories .cmplz-category summary::-webkit-details-marker {
   display: none;
   content: '';
@@ -341,13 +344,11 @@
   justify-content: center;
   padding: initial;
 }
-@supports not (display: flex; gap: 1em) {
-  .cmplz-cookiebanner .cmplz-buttons .cmplz-btn {
-    margin-bottom: 10px;
+@media (max-width: 425px) {
+  .cmplz-cookiebanner .cmplz-links.cmplz-information {
+    display: initial;
+    text-align: center;
   }
-}
-.cmplz-cookiebanner .cmplz-links.cmplz-information {
-  display: none;
 }
 .cmplz-cookiebanner .cmplz-links {
   display: flex;
@@ -367,17 +368,5 @@
 }
 .cmplz-cookiebanner .cmplz-links .cmplz-link.cmplz-read-more-purposes {
   display: none;
-}
-@supports not (display: flex; gap: 1em) {
-  .cmplz-cookiebanner .cmplz-links .cmplz-link + .cmplz-link {
-    margin-left: 10px;
-  }
-}
-/* The categories are also used on the cookie policy, so this needs to be outside the banner class */
-.cmplz-categories .cmplz-category .cmplz-description-statistics-anonymous {
-  display: none;
-}
-.cmplz-categories .cmplz-category .cmplz-description-statistics {
-  display: block;
 }
 /*# sourceMappingURL=cookiebanner.css.map */

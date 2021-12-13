@@ -4,6 +4,7 @@ defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
 if ( ! class_exists( 'cmplz_cookie_blocker' ) ) {
 	class cmplz_cookie_blocker {
 		private static $_this;
+		public $cookie_list;
 
 		function __construct() {
 			if ( isset( self::$_this ) ) {
@@ -11,11 +12,62 @@ if ( ! class_exists( 'cmplz_cookie_blocker' ) ) {
 					get_class( $this ) ) );
 			}
 
+			add_action( 'rest_api_init', array($this, 'cmplz_cookie_data_rest_route') );
+			add_action( 'init', array($this, 'load_cookie_data') );
 			self::$_this = $this;
 		}
 
 		static function this() {
 			return self::$_this;
+		}
+
+		public function load_cookie_data(){
+			$cookie_list = COMPLIANZ::$cookie_admin->get_cookies( array(
+				'ignored'           => false,
+				'hideEmpty'         => false,
+				'showOnPolicy'      => true,
+				'deleted'           => false,
+			) );
+			$this->get_cookies($cookie_list, 'preferences');
+			$this->get_cookies($cookie_list, 'statistics');
+			$this->get_cookies($cookie_list, 'marketing');
+		}
+
+		public function cmplz_cookie_data_rest_route() {
+			register_rest_route( 'complianz/v1', 'cookie_data/', array(
+				'methods'  => 'GET',
+				'callback' => array( $this, 'cookie_data'),
+				'permission_callback' => '__return_true',
+			) );
+		}
+
+		public function get_cookies($cookie_list, $category) {
+			foreach ( $cookie_list as $cookie ) {
+				if (stripos($cookie->purpose, $category)!==false) {
+					$this->cookie_list[$category][sanitize_title($cookie->service)][] = str_replace('*', '', $cookie->name );
+				}
+			}
+		}
+
+		/**
+		 * Get a blocked content notice
+		 * @return string
+		 */
+		public function blocked_content_text(){
+			return apply_filters('cmplz_accept_cookies_blocked_content', '<div class="cmplz-blocked-content-notice-body">'.__("Click to accept cookies for %s.", "complianz-gdpr").'&nbsp;<div class="cmplz-links"><a href="#" class="cmplz-link cookie-statement">'.__("Read more.", "complianz-gdpr").'</a></div></div><button class="cmplz-accept-marketing">'.__("Accept", "complianz-gdpr").'</button>');
+		}
+
+
+		/**
+		 * REST API for cookie data
+		 * @param WP_REST_Request $request
+		 */
+
+		public function cookie_data( WP_REST_Request $request ){
+			$response = json_encode( $this->cookie_list );
+			header( "Content-Type: application/json" );
+			echo $response;
+			exit;
 		}
 
 		/**
@@ -509,9 +561,9 @@ if ( ! class_exists( 'cmplz_cookie_blocker' ) ) {
 										}
 										$index ++;
 										$new = $this->add_data( $new, 'script', 'post_scribe_id', 'cmplz-ps-' . $index );
-										$new .= '<div class="cmplz-blocked-content-container"><div class="cmplz-blocked-content-notice cmplz-accept-marketing">'
-										        . apply_filters( 'cmplz_accept_cookies_blocked_content', cmplz_get_value( 'blocked_content_text' ) )
-										        . '</div><div id="cmplz-ps-' . $index . '"><img src="' . cmplz_placeholder( 'div' ) . '"></div></div>';
+										$new .= '<div class="cmplz-blocked-content-container">'
+										        . COMPLIANZ::$cookie_blocker->blocked_content_text()
+										        . '<div id="cmplz-ps-' . $index . '"><img src="' . cmplz_placeholder( 'div' ) . '"></div></div>';
 
 									}
 
@@ -530,7 +582,11 @@ if ( ! class_exists( 'cmplz_cookie_blocker' ) ) {
 			}
 
 			//add a marker so we can recognize if this function is active on the front-end
-			$output = str_replace( "<body ", '<body data-cmplz=1 ', $output );
+			$id = 1;
+			if ( cmplz_get_value( 'consent_per_service' ) === 'yes' ) {
+				$id = 2;
+			}
+			$output = str_replace( "<body ", "<body data-cmplz=$id ", $output );
 
 
 			return apply_filters('cmplz_cookie_blocker_output', $output);

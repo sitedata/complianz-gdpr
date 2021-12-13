@@ -1233,7 +1233,7 @@ if ( ! class_exists( "cmplz_document" ) ) {
 			// override default attributes with user attributes
 			$atts = shortcode_atts( array( 'text' => false ), $atts, $tag );
 
-			$accept_text = $atts['text'] ?: apply_filters( 'cmplz_accept_cookies_blocked_content', cmplz_get_value( 'blocked_content_text' ) );
+			$accept_text = $atts['text'] ?: __("Click to accept marketing cookies", "complianz-gdpr");
 			$html = '<div class="cmplz-custom-accept-btn cmplz-accept"><a href="#">' . $accept_text . '</a></div>';
 			echo $html;
 

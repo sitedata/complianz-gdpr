@@ -69,6 +69,7 @@
   box-shadow: 0 0 5px 5px rgba(222, 222, 222, 0.2);
   position: sticky;
   top: 50px;
+  max-height: calc(100vh - 87px);
   height: 100%;
   min-height: 480px;
 }
@@ -1284,6 +1285,9 @@ html .mceContentBody {
 .cmplz-comment {
   font-size: 12px;
   margin-top: 5px;
+}
+.cmplz-comment.cmplz-comment-warning {
+  color: #D7263D;
 }
 .cmplz-cookie-field .cmplz-cookie-header {
   border-bottom: 1px solid #b6b7b8;

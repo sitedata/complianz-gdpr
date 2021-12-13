@@ -9,14 +9,14 @@ function cmplz_openstreetmaps_plugin_script( $tags ) {
 			'placeholder' => 'openstreetmaps',
 			'urls' => array(
 					'ol.js',
-					'var raster = getTileLayer',
+					'var attribution = new ol.control.Attribution',
 			),
 			'enable_placeholder' => '1',
 			'placeholder_class' => 'map',
 			'enable_dependency' => '1',
 			'dependency' => [
 				//'wait-for-this-script' => 'script-that-should-wait'
-				'ol.js' => 'var raster = getTileLayer',
+				'ol.js' => 'ol.control.Attribution',
 			],
 	);
 	return $tags;
@@ -51,3 +51,7 @@ function cmplz_openstreetmaps_plugin_css() {
         }
     <?php
 }
+
+
+
+
