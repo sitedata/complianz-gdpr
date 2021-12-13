@@ -1115,13 +1115,7 @@ if ( ! function_exists( 'cmplz_no_ip_addresses' ) ) {
 		}
 
 		if ( $matomo ) {
-			if ( cmplz_get_value( 'matomo_anonymized', false, 'wizard' )
-			     === 'yes'
-			) {
-				return true;
-			} else {
-				return false;
-			}
+			return false;
 		}
 
 		return false;
@@ -1296,7 +1290,6 @@ if ( ! function_exists( 'cmplz_is_pagebuilder_preview' ) ) {
 		     || isset( $_GET['vcv-action'] )
 		     || isset( $_GET['fl_builder'] )
 		     || isset( $_GET['tve'] )
-		     || isset( $_GET['ct_builder'] )
 		) {
 			$preview = true;
 		}

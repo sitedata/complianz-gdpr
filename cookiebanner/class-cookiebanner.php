@@ -1174,7 +1174,6 @@ if ( ! class_exists( "cmplz_cookiebanner" ) ) {
 				'tm_categories'        => COMPLIANZ::$cookie_admin->uses_google_tagmanager(),
 				'forceEnableStats'     => !COMPLIANZ::$cookie_admin->cookie_warning_required_stats( $region ),
 				'preview'              => false,
-				'clean_cookies'           => cmplz_get_value( 'disable_cookie_block' ) != 1 && cmplz_get_value( 'consent_per_service' ) === 'yes',
 			);
 
 			$output = apply_filters( 'cmplz_cookiebanner_settings_front_end', $output, $this );

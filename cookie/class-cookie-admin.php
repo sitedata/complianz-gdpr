@@ -52,7 +52,6 @@ if ( ! class_exists( "cmplz_cookie_admin" ) ) {
 			add_action( 'admin_init', array( $this, 'ensure_cookies_in_all_languages' ) );
 			add_action( 'plugins_loaded', array( $this, 'rescan' ), 20, 2 );
 			add_action( 'plugins_loaded', array( $this, 'clear_cookies' ), 20, 2 );
-			add_action( 'cmplz_notice_statistics_script', array( $this, 'statistics_script_notice' ) );
 
 			//callback from settings
 			add_action( 'cmplz_cookie_scan', array( $this, 'scan_progress' ), 10, 1 );
@@ -1649,21 +1648,6 @@ if ( ! class_exists( "cmplz_cookie_admin" ) ) {
 			}
 		}
 
-
-		public function statistics_script_notice() {
-			$anonimized = ( cmplz_get_value( 'matomo_anonymized' ) === 'yes' )
-				? true : false;
-			if ( $this->uses_matomo() ) {
-				if ( $anonimized ) {
-					cmplz_notice( __( "You use Matomo for statistics on your site, with ip numbers anonymized. Therefore it is not necessary to add the script here.",
-						'complianz-gdpr' ) );
-				} else {
-					cmplz_notice( __( "You use Matomo for statistics on your site, but ip numbers are not anonymized. Therefore you should add your tracking script here.",
-						'complianz-gdpr' ) );
-				}
-			}
-		}
-
 		/**
 		 * Rescan after a manual "rescan" command from the user
 		 */
@@ -1960,6 +1944,7 @@ if ( ! class_exists( "cmplz_cookie_admin" ) ) {
 			//if a cookie warning is needed for the stats we don't add a native class, so it will be disabled by the cookie blocker by default
 			$category       = 'statistics';
 			$uses_tagmanager = cmplz_get_value( 'compile_statistics' ) === 'google-tag-manager' ? true : false;
+			$matomo = cmplz_get_value( 'compile_statistics' ) === 'matomo' ? true : false;
 
 			//without tag manager, set as functional if no cookie warning required for stats
 			if ( !$uses_tagmanager && ! $this->cookie_warning_required_stats() ) {
@@ -1968,6 +1953,10 @@ if ( ! class_exists( "cmplz_cookie_admin" ) ) {
 
 			//tag manager always fires as functional
 			if ( $uses_tagmanager ){
+				$category = 'functional';
+			}
+
+			if ( $matomo && cmplz_get_value('matomo_anonymized')==='yes' ) {
 				$category = 'functional';
 			}
 
@@ -2141,7 +2130,8 @@ if ( ! class_exists( "cmplz_cookie_admin" ) ) {
 				$script       = cmplz_get_template( "statistics/gtag$consent_mode.js" );
 				$script       = str_replace( array('{G_code}', '{anonymize_ip}', '{enable_tcf_support}'), array($code, $anonymize_ip, $enable_tcf_support), $script );
 			} elseif ( $statistics === 'matomo' ) {
-				$script = cmplz_get_template( 'statistics/matomo.js' );
+				$cookieless = ( cmplz_get_value( 'matomo_anonymized' ) === 'yes' ) ? '-cookieless' : '';
+				$script = cmplz_get_template( "statistics/matomo$cookieless.js" );
 				$script = str_replace( '{site_id}', esc_attr( cmplz_get_value( 'matomo_site_id' ) ), $script );
 				$script = str_replace( '{matomo_url}', esc_url_raw( trailingslashit( cmplz_get_value( 'matomo_url' ) ) ), $script );
 			} elseif ( $statistics === 'clicky' ) {
@@ -3806,6 +3796,10 @@ if ( ! class_exists( "cmplz_cookie_admin" ) ) {
 				return false;
 			}
 
+			if ( $matomo ) {
+				return false;
+			}
+
 			if ( $google_analytics || $tagmanager ) {
 				$thirdparty = $google_analytics ? cmplz_get_value( 'compile_statistics_more_info' ) : cmplz_get_value( 'compile_statistics_more_info_tag_manager' );
 				$accepted_google_data_processing_agreement = ( isset( $thirdparty['accepted'] ) && ( $thirdparty['accepted'] == 1 ) ) ? true : false;
@@ -3821,11 +3815,7 @@ if ( ! class_exists( "cmplz_cookie_admin" ) ) {
 				return false;
 			}
 
-			if ( $matomo
-			     && ( cmplz_get_value( 'matomo_anonymized' ) !== 'yes' )
-			) {
-				return false;
-			}
+
 
 			//everything set up privacy friendly!
 			return true;

@@ -790,7 +790,7 @@
 }
 #cmplz-wizard .cmplz-radio-container .radiobtn.disabled .cmplz-icon,
 #cmplz-settings .cmplz-radio-container .radiobtn.disabled .cmplz-icon {
-  background-color: #eee !important;
+  background-color: #a3e0fb !important;
 }
 #cmplz-wizard textarea.validation,
 #cmplz-settings textarea.validation,

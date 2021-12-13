@@ -562,7 +562,9 @@ function cmplz_integrations() {
 	if ( $statistics === 'google-analytics' ) {
 		require_once( 'statistics/google-analytics.php' );
 	}
-
+	if ( $statistics === 'matomo' && cmplz_get_value('configuration_by_complianz') !=='yes' ) {
+		require_once( 'statistics/matomo.php' );
+	}
 }
 
 add_action( 'plugins_loaded', 'cmplz_integrations', 10 );

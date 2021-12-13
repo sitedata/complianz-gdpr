@@ -296,7 +296,6 @@ if ( ! class_exists( "cmplz_config" ) ) {
 			require_once( cmplz_path . '/config/general-settings.php' );
 			require_once( cmplz_path . '/config/questions-wizard.php' );
 			require_once( cmplz_path . '/config/dynamic-fields.php' );
-			require_once( cmplz_path . '/config/dynamic-document-elements.php' );
 			require_once( cmplz_path . '/config/documents/documents.php' );
 			require_once( cmplz_path . '/config/documents/cookie-policy-eu.php' );
 			require_once( cmplz_path . '/config/documents/cookie-policy-us.php' );

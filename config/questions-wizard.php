@@ -344,9 +344,9 @@ $this->fields = $this->fields + array(
 			'type'                    => 'select',
 			'revoke_consent_onchange' => true,
 			'default'                 => '',
-			'label'                   => __( "Do you anonymize IP addresses in Matomo?", 'complianz-gdpr' ),
+			'label'                   => __( "Do you want to use cookieless tracking with Matomo?", 'complianz-gdpr' ),
 			'options'                 => $this->yes_no,
-			'help'                    => __( 'If IP addresses are anonymized, the statistics cookies do not require a separate category on your banner.', 'complianz-gdpr' ),
+			'help'                    => __( 'Learn more about using cookieless tracking with Matomo.', 'complianz-gdpr' ).cmplz_read_more( 'https://complianz.io/cookieless-tracking-matomo/'),
 			'condition'               => array(
 				'compile_statistics' => 'matomo',
 			),

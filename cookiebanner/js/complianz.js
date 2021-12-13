@@ -1313,7 +1313,7 @@ cmplz_add_event('click', '.cmplz-accept-marketing', function(e){
 	e.preventDefault();
 	let obj = e.target;
 	var service = obj.getAttribute('data-service');
-	if ( complianz.clean_cookies == 1 && typeof service !== 'undefined' && service ){
+	if ( typeof service !== 'undefined' && service ){
 		cmplz_set_service_consent(service, true);
 		cmplz_enable_category('', 'general');
 		cmplz_enable_category('', service);
