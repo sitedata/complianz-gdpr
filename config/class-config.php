@@ -668,7 +668,7 @@ if ( ! class_exists( "cmplz_config" ) ) {
 
 				'targeting-multiple-regions' => array(
 					'warning_condition' => 'cmplz_targeting_multiple_regions',
-					'premium' => __( 'Are you targeting multiple regions?', 'complianz-gdpr' ) . cmplz_read_more('/what-regions-do-i-target/'),
+					'premium' => __( 'Are you targeting multiple regions?', 'complianz-gdpr' ) . cmplz_read_more('https://complianz.io/what-regions-do-i-target/'),
 					'include_in_progress' => false,
 					'dismissible' => false,
 				),
